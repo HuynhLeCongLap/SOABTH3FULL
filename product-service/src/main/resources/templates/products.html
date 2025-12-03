@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý sản phẩm</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
+        h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #6b73ff; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        button { padding: 5px 10px; margin: 0 2px; border: none; border-radius: 4px; cursor: pointer; }
+        button.edit { background-color: #ff9800; color: white; }
+        button.delete { background-color: #f44336; color: white; }
+        button.add { background-color: #4CAF50; color: white; margin-bottom: 10px; }
+        #formContainer { margin-top: 20px; background: white; padding: 15px; border-radius: 8px; display: none; }
+        #formContainer input { padding: 8px; margin: 5px 0; width: 100%; }
+    </style>
+</head>
+<body>
+
+<h2>Danh sách sản phẩm</h2>
+<button class="add" onclick="showAddForm()">Thêm sản phẩm</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Mô tả</th>
+            <th>Ngày tạo</th>
+            <th>Ngày cập nhật</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Dữ liệu Thymeleaf -->
+        <tr th:each="p : ${products}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.name}"></td>
+            <td th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 2, 'POINT')} + ' VND'"></td>
+            <td th:text="${p.quantity}"></td>
+            <td th:text="${p.description}"></td>
+            <td th:text="${#dates.format(p.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${#dates.format(p.updatedAt, 'dd/MM/yyyy HH:mm')}"></td>
+            <td>
+                <a th:href="@{'/products/edit/' + ${p.id}}" class="edit">Sửa</a>
+                <a th:href="@{'/products/delete/' + ${p.id}}" class="delete" 
+                   onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">Xóa</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Form thêm/sửa -->
+<div id="formContainer">
+    <h3 th:text="${product} != null ? 'Sửa sản phẩm' : 'Thêm sản phẩm'"></h3>
+    <form th:action="${product} != null ? @{/products/update/{id}(id=${product.id})} : @{/products/add}" 
+          method="post">
+        <input type="text" name="name" placeholder="Tên sản phẩm" th:value="${product != null} ? ${product.name} : ''" required>
+        <input type="number" name="price" placeholder="Giá" th:value="${product != null} ? ${product.price} : ''" required>
+        <input type="number" name="quantity" placeholder="Số lượng" th:value="${product != null} ? ${product.quantity} : ''" required>
+        <input type="text" name="description" placeholder="Mô tả" th:value="${product != null} ? ${product.description} : ''" required>
+        <button type="submit">Lưu</button>
+        <button type="button" onclick="hideForm()">Hủy</button>
+    </form>
+</div>
+
+<script>
+function showAddForm() {
+    document.getElementById('formContainer').style.display = 'block';
+}
+
+function hideForm() {
+    document.getElementById('formContainer').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
