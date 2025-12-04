@@ -131,5 +131,6 @@ Service đã có sẵn 5 sản phẩm mẫu:
 - Dell XPS 13 - $1299.99
 - iPad Air - $599.99
 
-
+.\gradlew clean build
+.\gradlew bootRun
 .\gradlew.bat bootRun

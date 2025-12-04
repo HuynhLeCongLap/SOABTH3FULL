@@ -60,4 +60,17 @@ public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletRes
             return ResponseEntity.status(401).body("Invalid token");
         }
     }
+    @PostMapping("/logout")
+public ResponseEntity<?> logout(HttpServletResponse response) {
+    // Xóa cookie JWT
+    Cookie cookie = new Cookie("jwt_token", null);
+    cookie.setHttpOnly(true);
+    cookie.setPath("/");
+    cookie.setMaxAge(0); // xóa cookie
+    response.addCookie(cookie);
+
+    return ResponseEntity.ok("{\"message\": \"Logout successful\"}");
+}
+
+
 }
