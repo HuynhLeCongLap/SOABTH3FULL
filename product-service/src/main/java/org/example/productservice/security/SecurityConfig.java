@@ -23,15 +23,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .cors().configurationSource(corsConfigurationSource()) // dùng CorsConfigurationSource
+
+        http
+            .csrf().disable()
+            .cors().configurationSource(corsConfigurationSource())
             .and()
             .authorizeRequests()
+
+            // Cho phép login
             .antMatchers("/login").permitAll()
+
+            // MỞ HOÀN TOÀN API CHO ORDER-SERVICE
+            .antMatchers("/products/api", "/products/api/**").permitAll()
+
+            // API khác yêu cầu JWT
             .antMatchers("/products/**", "/products-page").authenticated()
+
             .anyRequest().permitAll()
             .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -39,20 +50,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080")); // frontend
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("*")); // cho phép tất cả header
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:8082"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }

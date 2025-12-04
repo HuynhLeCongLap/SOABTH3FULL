@@ -33,7 +33,7 @@ public class ProductService {
                     product.setDescription(updatedProduct.getDescription());
                     product.setPrice(updatedProduct.getPrice());
                     product.setQuantity(updatedProduct.getQuantity());
-                    product.setUpdatedAt(updatedProduct.getUpdatedAt());
+                    // Không cần set updatedAt thủ công nữa
                     return repository.save(product);
                 })
                 .orElseThrow(() -> new RuntimeException("Product not found"));
